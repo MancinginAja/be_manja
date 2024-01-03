@@ -137,6 +137,14 @@ func ValidatePhoneNumber(phoneNumber string) (bool, error) {
 	return isValid, nil
 }
 
+// validate latitude longitude
+func CheckLatitudeLongitude(db *mongo.Database, latitude, longitude string) bool {
+	collection := db.Collection("billboard")
+	filter := bson.M{"latitude": latitude, "longitude": longitude}
+	err := collection.FindOne(context.Background(), filter).Decode(&model.FishingSpot{})
+	return err == nil
+}
+
 // user
 // get-user
 func GetUserFromID(_id primitive.ObjectID, db *mongo.Database) (doc model.User, err error) {
@@ -195,7 +203,7 @@ func EditProfile(idparam primitive.ObjectID, db *mongo.Database, r *http.Request
 	if image != "" {
 		imageUrl = image
 	} else {
-		imageUrl, err = intermoni.SaveFileToGithub("Erditona", "erditonaushaadam@gmail.com", "image-manja", "ksi", r)
+		imageUrl, err = intermoni.SaveFileToGithub("erditona", "erditonaushaadam@gmail.com", "image-manja", "manja", r)
 		if err != nil {
 			return bson.M{}, fmt.Errorf("error save file: %s", err)
 		}
@@ -203,7 +211,7 @@ func EditProfile(idparam primitive.ObjectID, db *mongo.Database, r *http.Request
 	}
 
 	profile := bson.M{
-		"fullname": fullname,
+		"fullname":    fullname,
 		"email":       dataUser.Email,
 		"password":    dataUser.Password,
 		"phonenumber": phonenumber,
@@ -224,8 +232,8 @@ func EditProfile(idparam primitive.ObjectID, db *mongo.Database, r *http.Request
 	return data, nil
 }
 
-func EditEmail(iduser primitive.ObjectID, db *mongo.Database, insertedDoc model.User) (bson.M, error) {
-	dataUser, err := GetUserFromID(iduser, db)
+func EditEmail(idparam primitive.ObjectID, db *mongo.Database, insertedDoc model.User) (bson.M, error) {
+	dataUser, err := GetUserFromID(idparam, db)
 	if err != nil {
 		return bson.M{}, err
 	}
@@ -247,7 +255,7 @@ func EditEmail(iduser primitive.ObjectID, db *mongo.Database, insertedDoc model.
 		"image":       dataUser.Image,
 		"salt":        dataUser.Salt,
 	}
-	err = UpdateOneDoc(iduser, db, "user", user)
+	err = UpdateOneDoc(idparam, db, "user", user)
 	if err != nil {
 		return bson.M{}, err
 	}
@@ -260,8 +268,8 @@ func EditEmail(iduser primitive.ObjectID, db *mongo.Database, insertedDoc model.
 	return data, nil
 }
 
-func EditPassword(iduser primitive.ObjectID, db *mongo.Database, insertedDoc model.UpdatePassword) (bson.M, error) {
-	dataUser, err := GetUserFromID(iduser, db)
+func EditPassword(idparam primitive.ObjectID, db *mongo.Database, insertedDoc model.UpdatePassword) (bson.M, error) {
+	dataUser, err := GetUserFromID(idparam, db)
 	if err != nil {
 		return bson.M{}, err
 	}
@@ -293,15 +301,15 @@ func EditPassword(iduser primitive.ObjectID, db *mongo.Database, insertedDoc mod
 		"image":       dataUser.Image,
 		"salt":        hex.EncodeToString(salt),
 	}
-	err = UpdateOneDoc(iduser, db, "user", user)
+	err = UpdateOneDoc(idparam, db, "user", user)
 	if err != nil {
 		return bson.M{}, err
 	}
 	data := bson.M{
-		"fullname": dataUser.Fullname,
+		"fullname":    dataUser.Fullname,
 		"email":       dataUser.Email,
-		"phonenumber":        dataUser.PhoneNumber,
-		"image":      dataUser.Image,
+		"phonenumber": dataUser.PhoneNumber,
+		"image":       dataUser.Image,
 	}
 
 	return data, nil
@@ -375,4 +383,144 @@ func LogIn(db *mongo.Database, col string, insertedDoc model.User) (user model.U
 		return user, fmt.Errorf("password salah")
 	}
 	return existsDoc, nil
+}
+
+// Fishing Spot
+// post-fishingSpot
+func PostFishingSpot(db *mongo.Database, col string,r *http.Request) (bson.M, error) {
+	name := r.FormValue("name")
+	phonenumber := r.FormValue("phonenumber")
+	topfish := r.FormValue("topfish")
+	rating := r.FormValue("rating")
+	openinghour := r.FormValue("openinghour")
+	description := r.FormValue("description")
+	address := r.FormValue("address")
+	latitude := r.FormValue("latitude")
+	longitude := r.FormValue("longitude")
+	
+	if name == "" || phonenumber == "" || topfish == "" || rating == "" || openinghour == "" || description == "" || address == "" || latitude == "" || longitude == "" {
+		return bson.M{}, fmt.Errorf("mohon untuk melengkapi data")
+	}
+	if CheckLatitudeLongitude(db, latitude, longitude) {
+		return bson.M{}, fmt.Errorf("lokasi sudah terdaftar")
+	}
+	validatePhoneNumber, _ := ValidatePhoneNumber(phonenumber)
+	if !validatePhoneNumber {
+		return bson.M{}, fmt.Errorf("nomor telepon tidak valid")
+	}
+
+	imageUrl, err := intermoni.SaveFileToGithub("erditona", "erditonaushaadam@gmail.com", "image-manja", "manja", r)
+	if err != nil {
+		return bson.M{}, fmt.Errorf("error save file: %s", err)
+	}
+
+	fishingSpot := bson.M{
+		"_id": primitive.NewObjectID(),
+		"name": name,
+		"phonenumber": phonenumber,
+		"topfish": topfish,
+		"rating": rating,
+		"openinghour": openinghour,
+		"description": description,
+		"image": imageUrl,
+		"address": address,
+		"longitude": longitude,
+		"latitude": latitude,
+	}
+	_, err = InsertOneDoc(db, col, fishingSpot)
+	if err != nil {
+		return bson.M{}, err
+	}
+	return fishingSpot, nil
+}
+
+// get-fishingSpot
+func GetFishingSpotById(db *mongo.Database, col string, idparam primitive.ObjectID) (doc model.FishingSpot, err error) {
+	collection := db.Collection(col)
+	filter := bson.M{"_id": idparam}
+	err = collection.FindOne(context.Background(), filter).Decode(&doc)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return doc, fmt.Errorf("data tidak ditemukan untuk ID %s", idparam)
+		}
+		return doc, fmt.Errorf("kesalahan server")
+	}
+	return doc, nil
+}
+
+func GetAllFishingSpot(db *mongo.Database, col string) (docs []model.FishingSpot, err error) {
+	collection := db.Collection(col)
+	filter := bson.M{}
+	cursor, err := collection.Find(context.Background(), filter)
+	if err != nil {
+		return docs, fmt.Errorf("kesalahan server")
+	}
+	err = cursor.All(context.Background(), &docs)
+	if err != nil {
+		return docs, fmt.Errorf("kesalahan server")
+	}
+	return docs, nil
+}
+
+// put-fishingSpot
+func PutFishingSpot(_id primitive.ObjectID, db *mongo.Database, r *http.Request) (bson.M, error) {
+	name := r.FormValue("name")
+	phonenumber := r.FormValue("phonenumber")
+	topfish := r.FormValue("topfish")
+	rating := r.FormValue("rating")
+	openinghour := r.FormValue("openinghour")
+	description := r.FormValue("description")
+	address := r.FormValue("address")
+	latitude := r.FormValue("latitude")
+	longitude := r.FormValue("longitude")
+
+	image := r.FormValue("file")
+
+	if name == "" || phonenumber == "" || topfish == "" || rating == "" || openinghour == "" || description == "" || address == "" || latitude == "" || longitude == "" {
+		return bson.M{}, fmt.Errorf("mohon untuk melengkapi data")
+	}
+
+	if image != "" {
+		imageUrl = image
+	} else {
+		imageUrl, err := intermoni.SaveFileToGithub("erditona", "erditonaushaadam@gmail.com", "image-manja", "manja", r)
+		if err != nil {
+			return bson.M{}, fmt.Errorf("error save file: %s", err)
+		}
+		image = imageUrl
+	}
+
+	billboard := bson.M{
+		"name": name,
+		"phonenumber": phonenumber,
+		"topfish": topfish,
+		"rating": rating,
+		"openinghour": openinghour,
+		"description": description,
+		"image": image,
+		"address": address,
+		"longitude": longitude,
+		"latitude": latitude,
+	}
+	err := UpdateOneDoc(_id, db, "billboard", billboard)
+	if err != nil {
+		return bson.M{}, err
+	}
+	return billboard, nil
+}
+
+// delete-fishingSpot
+func DeleteFishingSpot(_id primitive.ObjectID, db *mongo.Database, col string) error {
+	collection := db.Collection(col)
+	filter := bson.M{"_id": _id}
+	result, err := collection.DeleteOne(context.Background(), filter)
+	if err != nil {
+		return fmt.Errorf("error deleting data for ID %s: %s", _id, err.Error())
+	}
+
+	if result.DeletedCount == 0 {
+		return fmt.Errorf("data with ID %s not found", _id)
+	}
+
+	return nil
 }
