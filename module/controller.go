@@ -387,7 +387,7 @@ func LogIn(db *mongo.Database, col string, insertedDoc model.User) (user model.U
 
 // Fishing Spot
 // post-fishingSpot
-func PostFishingSpot(db *mongo.Database, col string,r *http.Request) (bson.M, error) {
+func PostFishingSpot(db *mongo.Database, col string, r *http.Request) (bson.M, error) {
 	name := r.FormValue("name")
 	phonenumber := r.FormValue("phonenumber")
 	topfish := r.FormValue("topfish")
