@@ -139,7 +139,7 @@ func ValidatePhoneNumber(phoneNumber string) (bool, error) {
 
 // validate latitude longitude
 func CheckLatitudeLongitude(db *mongo.Database, latitude, longitude string) bool {
-	collection := db.Collection("billboard")
+	collection := db.Collection("fishingSpot")
 	filter := bson.M{"latitude": latitude, "longitude": longitude}
 	err := collection.FindOne(context.Background(), filter).Decode(&model.FishingSpot{})
 	return err == nil
@@ -463,7 +463,7 @@ func GetAllFishingSpot(db *mongo.Database, col string) (docs []model.FishingSpot
 }
 
 // put-fishingSpot
-func PutFishingSpot(_id primitive.ObjectID, db *mongo.Database, r *http.Request) (bson.M, error) {
+func PutFishingSpot(_id primitive.ObjectID, db *mongo.Database, col string, r *http.Request) (bson.M, error) {
 	name := r.FormValue("name")
 	phonenumber := r.FormValue("phonenumber")
 	topfish := r.FormValue("topfish")
@@ -490,7 +490,7 @@ func PutFishingSpot(_id primitive.ObjectID, db *mongo.Database, r *http.Request)
 		image = imageUrl
 	}
 
-	billboard := bson.M{
+	fishingSpot := bson.M{
 		"name": name,
 		"phonenumber": phonenumber,
 		"topfish": topfish,
@@ -502,11 +502,11 @@ func PutFishingSpot(_id primitive.ObjectID, db *mongo.Database, r *http.Request)
 		"longitude": longitude,
 		"latitude": latitude,
 	}
-	err := UpdateOneDoc(_id, db, "billboard", billboard)
+	err := UpdateOneDoc(_id, db, col, fishingSpot)
 	if err != nil {
 		return bson.M{}, err
 	}
-	return billboard, nil
+	return fishingSpot, nil
 }
 
 // delete-fishingSpot
