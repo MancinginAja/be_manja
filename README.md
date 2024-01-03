@@ -1,4 +1,5 @@
-# Hi, Beckend-nya Baru Dibuat Repository-nya Aja Cuyyy ⚒💪👷‍♂️
+# Hi, Ini Beckend Manja 
 
 > [!CAUTION]
-> Pengerjaan Baru Akan Dimulai Januari 2024.
+> Pengerjaan Dimulai Januari 2024.
+> Tahap Pengerjaan Cuyyy ⚒💪👷‍♂️
