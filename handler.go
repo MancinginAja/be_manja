@@ -209,7 +209,7 @@ func TambahFishingSpotHandler(PASETOPUBLICKEYENV, MONGOCONNSTRINGENV, dbname str
 		return module.GCFReturnStruct(response)
 	}
 	if user.Email != "admin@gmail.com" {
-		response.Message = "Anda tidak memiliki akses"
+		response.Message = "Anda tidak memiliki akses, email anda : " + user.Email
 		return module.GCFReturnStruct(response)
 	}
 	data, err := module.PostFishingSpot(conn, collectionname, r)
