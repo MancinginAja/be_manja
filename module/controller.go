@@ -139,7 +139,7 @@ func ValidatePhoneNumber(phoneNumber string) (bool, error) {
 
 // validate latitude longitude
 func CheckLatitudeLongitude(db *mongo.Database, latitude, longitude string) bool {
-	collection := db.Collection("fishingSpot")
+	collection := db.Collection("fishingpspot")
 	filter := bson.M{"latitude": latitude, "longitude": longitude}
 	err := collection.FindOne(context.Background(), filter).Decode(&model.FishingSpot{})
 	return err == nil

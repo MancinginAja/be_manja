@@ -33,18 +33,45 @@ func TestSignUp(t *testing.T) {
 	}
 }
 
-func TestLogIn(t *testing.T) {
+// func TestLogIn(t *testing.T) {
+// 	conn := db
+// 	var user model.User
+// 	user.Email = "dito@gmail.com"
+// 	user.Password = "dito12345678"
+// 	user, _ = module.LogIn(conn, collectionnameUser, user)
+// 	token := "v4.public.eyJleHAiOiIyMDI0LTAxLTA0VDEwOjQ2OjQwWiIsImZ1bGxuYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiaWF0IjoiMjAyNC0wMS0wNFQwODo0Njo0MFoiLCJpZCI6IjY1OTY1ZWNkY2MxOGQxNmNkNGNhNGY4YSIsIm5iZiI6IjIwMjQtMDEtMDRUMDg6NDY6NDBaIn2ABnDsInI3fCmAyBB6FUCzcTxhgQxUyz1SnNl5vl_AzTqvIRe193Hh2t4M9I8IPPn7LczZhODquCwa57tqOCEB"
+// 	tokenstring, err := module.Decode("2df976efd75eacf2a37b1ce184deec8d3b72cb78f7881ed5e7a02d97351c2aef", token)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	} else {
+// 		fmt.Println("Berhasil LogIn : ", user.Fullname)
+// 		fmt.Print("Berhasil LogIn : " + tokenstring.Id.Hex())
+// 	}
+// }
+
+func TestLogInn(t *testing.T) {
 	conn := db
 	var user model.User
-	user.Email = "dito@gmail.com"
-	user.Password = "dito12345678"
-	user, err := module.LogIn(conn, collectionnameUser, user)
-	// user, err := PASETOPRIVATEKEYENV.Decode(os.Getenv("v4.public.eyJleHAiOiIyMDI0LTAxLTA0VDA5OjMxOjUxWiIsImZ1bGxuYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiaWF0IjoiMjAyNC0wMS0wNFQwNzozMTo1MVoiLCJpZCI6IjY1OTY1ZWNkY2MxOGQxNmNkNGNhNGY4YSIsIm5iZiI6IjIwMjQtMDEtMDRUMDc6MzE6NTFaIn2zI79OV1A342NV3eFbJaA38iQClTp07aLSod43pc5B6ZnyPOZLTNHtwfVqyHFBY5QkFYyshAv5LZ6l6wPVqf8I"), user.Token)
+	user.Email = "admin@gmail.com"
+	user.Password = "admin12345678"
+	user, _ = module.LogIn(conn, collectionnameUser, user)
+	tokenstring, err := module.Encode(user.ID, user.Email, "33186fcfc13ba9946bf200cf6c7808e6ebfc605140f65809e06648985b08ebda2df976efd75eacf2a37b1ce184deec8d3b72cb78f7881ed5e7a02d97351c2aef")
 	if err != nil {
 		fmt.Println(err)
 	} else {
 		fmt.Println("Berhasil LogIn : ", user.Fullname)
-		fmt.Print("Berhasil LogIn : " + user.Email)
+		fmt.Print("Berhasil LogIn : " + tokenstring)
+	}
+}
+
+func TestToken (*testing.T) {
+	token := "v4.public.eyJleHAiOiIyMDI0LTAxLTA0VDExOjI1OjU0WiIsImZ1bGxuYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiaWF0IjoiMjAyNC0wMS0wNFQwOToyNTo1NFoiLCJpZCI6IjY1OTY1ZWNkY2MxOGQxNmNkNGNhNGY4YSIsIm5iZiI6IjIwMjQtMDEtMDRUMDk6MjU6NTRaIn22kA21UMcQv-6lNrkBu88rV3XGGgToTBqulQui3HrZcYb_Go-qyCBdzje7Qg3Omj-hI5lXRRFj1afCzeMdyG0B"
+	tokenstring, err := module.Decode("2df976efd75eacf2a37b1ce184deec8d3b72cb78f7881ed5e7a02d97351c2aef", token)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Print("Id Token : " + tokenstring.Id.Hex())
+		fmt.Print("Email Token : " + tokenstring.Email)
 	}
 }
 
