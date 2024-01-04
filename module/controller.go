@@ -512,17 +512,25 @@ func PutFishingSpot(_id primitive.ObjectID, db *mongo.Database, col string, r *h
 }
 
 // delete-fishingSpot
-func DeleteFishingSpot(_id primitive.ObjectID, db *mongo.Database, col string) error {
-	collection := db.Collection(col)
-	filter := bson.M{"_id": _id}
-	result, err := collection.DeleteOne(context.Background(), filter)
+// func DeleteFishingSpot(_id primitive.ObjectID, db *mongo.Database, col string) error {
+// 	collection := db.Collection(col)
+// 	filter := bson.M{"_id": _id}
+// 	result, err := collection.DeleteOne(context.Background(), filter)
+// 	if err != nil {
+// 		return fmt.Errorf("error deleting data for ID %s: %s", _id, err.Error())
+// 	}
+
+// 	if result.DeletedCount == 0 {
+// 		return fmt.Errorf("data with ID %s not found", _id)
+// 	}
+
+// 	return nil
+// }
+
+func DeleteFishingspot(_id primitive.ObjectID, col string, db *mongo.Database) error {
+	err := DeleteOneDoc(_id, db, col)
 	if err != nil {
-		return fmt.Errorf("error deleting data for ID %s: %s", _id, err.Error())
+		return err
 	}
-
-	if result.DeletedCount == 0 {
-		return fmt.Errorf("data with ID %s not found", _id)
-	}
-
 	return nil
 }

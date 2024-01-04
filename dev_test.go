@@ -68,9 +68,9 @@ func TestCheckLatitudelongitude(t *testing.T) {
 
 func TestDeleteFishingspot(t *testing.T) {
 	conn := db
-	id := "6596a0a650a3e5761d0623b2"
+	id := "659691c742b37da5524f2ef6"
 	objectId, err := primitive.ObjectIDFromHex(id)
-	err = module.DeleteFishingSpot(objectId, conn, "fishingspot")
+	err = module.DeleteFishingspot(objectId, "fishingspot", conn )
 	if err != nil {
 		fmt.Println(err)
 	} else {

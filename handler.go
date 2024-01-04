@@ -330,7 +330,7 @@ func DeleteFishingSpotHandler(PASETOPUBLICKEYENV, MONGOCONNSTRINGENV, collection
 		response.Message = "Invalid id parameter"
 		return module.GCFReturnStruct(response)
 	}
-	err = module.DeleteFishingSpot(idparam, conn, collectionname)
+	err = module.DeleteFishingspot(idparam, collectionname, conn)
 	if err != nil {
 		response.Message = err.Error()
 		return module.GCFReturnStruct(response)
