@@ -39,10 +39,12 @@ func TestLogIn(t *testing.T) {
 	user.Email = "dito@gmail.com"
 	user.Password = "dito12345678"
 	user, err := module.LogIn(conn, collectionnameUser, user)
+	// user, err := PASETOPRIVATEKEYENV.Decode(os.Getenv("v4.public.eyJleHAiOiIyMDI0LTAxLTA0VDA5OjMxOjUxWiIsImZ1bGxuYW1lIjoiYWRtaW5AZ21haWwuY29tIiwiaWF0IjoiMjAyNC0wMS0wNFQwNzozMTo1MVoiLCJpZCI6IjY1OTY1ZWNkY2MxOGQxNmNkNGNhNGY4YSIsIm5iZiI6IjIwMjQtMDEtMDRUMDc6MzE6NTFaIn2zI79OV1A342NV3eFbJaA38iQClTp07aLSod43pc5B6ZnyPOZLTNHtwfVqyHFBY5QkFYyshAv5LZ6l6wPVqf8I"), user.Token)
 	if err != nil {
 		fmt.Println(err)
 	} else {
 		fmt.Println("Berhasil LogIn : ", user.Fullname)
+		fmt.Print("Berhasil LogIn : " + user.Email)
 	}
 }
 
