@@ -268,7 +268,7 @@ func GetFishingSpotHandler(MONGOCONNSTRINGENV, dbname string, collectionname str
 	return module.GCFReturnStruct(responData)
 }
 
-func EditFishingSpotHandler(PASETOPUBLICKEYENV, MONGOCONNSTRINGENV, collectionname string, dbname string, r *http.Request) string {
+func EditFishingSpotHandler(PASETOPUBLICKEYENV, MONGOCONNSTRINGENV, dbname string, collectionname string, r *http.Request) string {
 	conn := module.MongoConnect(MONGOCONNSTRINGENV, dbname)
 	response.Status = 400
 	//
@@ -307,7 +307,7 @@ func EditFishingSpotHandler(PASETOPUBLICKEYENV, MONGOCONNSTRINGENV, collectionna
 	return module.GCFReturnStruct(responData)
 }
 
-func DeleteFishingSpotHandler(PASETOPUBLICKEYENV, MONGOCONNSTRINGENV, collectionname string, dbname string, r *http.Request) string {
+func DeleteFishingSpotHandler(PASETOPUBLICKEYENV, MONGOCONNSTRINGENV, dbname string, collectionname string, r *http.Request) string {
 	conn := module.MongoConnect(MONGOCONNSTRINGENV, dbname)
 	response.Status = 400
 	//
