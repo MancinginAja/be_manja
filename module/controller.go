@@ -52,6 +52,7 @@ func GetAllDocs(db *mongo.Database, col string, docs interface{}) interface{} {
 func InsertOneDoc(db *mongo.Database, col string, doc interface{}) (insertedID primitive.ObjectID, err error) {
 	result, err := db.Collection(col).InsertOne(context.Background(), doc)
 	if err != nil {
+		fmt.Println("error insert : ", err)
 		return insertedID, fmt.Errorf("kesalahan server : insert")
 	}
 	insertedID = result.InsertedID.(primitive.ObjectID)
@@ -139,9 +140,10 @@ func ValidatePhoneNumber(phoneNumber string) (bool, error) {
 
 // validate latitude longitude
 func CheckLatitudeLongitude(db *mongo.Database, latitude, longitude string) bool {
-	collection := db.Collection("fishingpspot")
+	collection := db.Collection("fishingspot")
 	filter := bson.M{"latitude": latitude, "longitude": longitude}
 	err := collection.FindOne(context.Background(), filter).Decode(&model.FishingSpot{})
+	fmt.Println(err)
 	return err == nil
 }
 
